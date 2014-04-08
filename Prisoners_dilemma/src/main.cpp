@@ -5,11 +5,13 @@
  *      Author: reginaldo
  */
 #include <iostream>
+#include "Dilemma.h"
 using namespace std;
 #define EXIT 0;
 
 int main(void){
-
+	Dilemma *d = new Dilemma();
+	d->runGA();
 	return EXIT;
 }
 
