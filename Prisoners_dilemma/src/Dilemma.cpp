@@ -35,13 +35,16 @@ void Dilemma::crossover(){
 }
 
 void Dilemma::mutation(){
-
+	for (int i = 0; i < NPOPULATION; ++i)
+		for (int j = 0; j < NGENES; ++j)
+			if(rand->Uniform() <= MUTATION_PROB)
+				population[i].flipGene(j);
 }
 
 void Dilemma::runGA(){
 	this->createFirstPopulation();
 
-	Fitness::setFitnessType(PAIR);
+	Fitness::setFitnessConfiguration(PAIR, INDIVIDUAL);
 
 	for (int i = 0; i < NGENERATIONS; ++i) {
 		this->calculateFitness();
