@@ -5,8 +5,8 @@
  *      Author: reginaldo
  */
 
-#ifndef CHROMOSSOME_H_
-#define CHROMOSSOME_H_
+#ifndef CHROMOSOME_H_
+#define CHROMOSOME_H_
 
 #include "../MasterChromo/MasterChromo.h"
 #include "CONSTANTS.h"
@@ -15,13 +15,13 @@
 #include <iostream>
 using namespace std;
 
-class Chromossome : public MasterChromo<double> {
+class Chromosome : public MasterChromo<double> {
 private:
 	bitset<NGENES> genes;
 
 public:
-	Chromossome(){};
-	virtual ~Chromossome(){};
+	Chromosome(){};
+	virtual ~Chromosome(){};
 
 	inline bool getGene(const int &pos) const{
 		return genes[pos];
@@ -35,14 +35,13 @@ public:
 		genes.flip(pos);
 	}
 
-	inline static Chromossome createChromossome(){
-		Chromossome c;
+	inline static Chromosome createChromosome(){
+		Chromosome c;
 		Rand *r = new Rand();
 		r->SetSeed();
-		for (int i = 0; i < NGENES; ++i) {
+		for (int i = 0; i < NGENES; ++i)
 			if(r->Uniform() > 0.5)
 				c.flipGene(i);
-		}
 		delete r;
 		return c;
 	}
@@ -50,7 +49,6 @@ public:
 	inline void print() const {
 		cout << genes << endl;
 	}
-
 };
 
-#endif /* CHROMOSSOME_H_ */
+#endif /* CHROMOSOME_H_ */

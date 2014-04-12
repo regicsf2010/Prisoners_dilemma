@@ -8,7 +8,7 @@
 #ifndef FITNESS_H_
 #define FITNESS_H_
 
-#include "Chromossome.h"
+#include "Chromosome.h"
 #include "../RNumbers/Rand.h"
 
 enum FitnessType {
@@ -79,7 +79,7 @@ public:
 		Fitness::fitEval = fitEval;
 	}
 
-	inline static void calculateFitness(Chromossome *population) {
+	inline static void calculateFitness(Chromosome *population) {
 		Fitness::configureDecisions();
 		switch (Fitness::fitType) {
 		case PAIR:

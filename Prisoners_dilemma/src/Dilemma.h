@@ -8,17 +8,18 @@
 #ifndef DILEMMA_H_
 #define DILEMMA_H_
 
-class Chromossome;
+class Chromosome;
 class Rand;
 
 struct Stats{
-	double fitnessPopMean;
-	double fitnessPopSD;
+	double popFitnessMean;
+	double popFitnessSD;
+	double popBestFitness;
 };
 
 class Dilemma {
 private:
-	Chromossome *population;
+	Chromosome *population;
 	Rand *rand;
 	Stats *stats;
 
@@ -30,6 +31,9 @@ private:
 
 	double calculateFitnessPopulationMean();
 	double calculateFitnessPopulationSD(double fitnessMean);
+	double calculateBestFitnessPopulation();
+	void sortPopulation();
+	static int compare(const void *x, const void *y);
 	void writeMatLabScript();
 
 public:

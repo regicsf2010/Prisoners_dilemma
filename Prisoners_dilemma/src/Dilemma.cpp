@@ -6,7 +6,7 @@
  */
 
 #include "Dilemma.h"
-#include "Chromossome.h"
+#include "Chromosome.h"
 #include "../RNumbers/Rand.h"
 #include "Fitness.h"
 #include <math.h>
@@ -14,7 +14,7 @@
 using namespace std;
 
 Dilemma::Dilemma() {
-	population = new Chromossome[NPOPULATION];
+	population = new Chromosome[NPOPULATION];
 	stats = new Stats[NGENERATIONS];
 	rand = new Rand();
 	rand->SetSeed();
@@ -28,7 +28,7 @@ Dilemma::~Dilemma() {
 
 void Dilemma::createFirstPopulation() {
 	for (int i = 0; i < NPOPULATION; ++i)
-		population[i] = Chromossome::createChromossome();
+		population[i] = Chromosome::createChromosome();
 }
 
 void Dilemma::calculateFitness() {
@@ -36,7 +36,7 @@ void Dilemma::calculateFitness() {
 }
 
 void Dilemma::crossover() {
-	Chromossome *parents = new Chromossome[NPOPULATION];
+	Chromosome *parents = new Chromosome[NPOPULATION];
 	int selected = -1, sorted = -1;
 	// TOURNAMENT
 	for (int i = 0; i < NPOPULATION; ++i) {
@@ -96,16 +96,29 @@ double Dilemma::calculateFitnessPopulationSD(double fitnessMean) {
 	return sqrt(fitnessPopulationSD);
 }
 
+double Dilemma::calculateBestFitnessPopulation(){
+	qsort(population, NPOPULATION, sizeof(population[0]), compare);
+	return population[0].getFitness();
+}
+
+int Dilemma::compare(const void *x, const void *y){
+	const Chromosome xx = *(Chromosome*)x;
+	const Chromosome yy = *(Chromosome*)y;
+	if(xx.getFitness() < yy.getFitness()) return 1;
+	if(xx.getFitness() > yy.getFitness()) return -1;
+	return 0;
+}
+
 void Dilemma::runGA() {
 	this->createFirstPopulation();
 
-	Fitness::setFitnessConfiguration(ALL_POPULATION, GROUP);
+	Fitness::setFitnessConfiguration(PAIR, GROUP);
 
 	for (int i = 0; i < NGENERATIONS; ++i) {
 		this->calculateFitness();
-		double mean = calculateFitnessPopulationMean();
-		stats[i].fitnessPopMean = mean;
-		stats[i].fitnessPopSD = calculateFitnessPopulationSD(mean);
+		stats[i].popFitnessMean = calculateFitnessPopulationMean();
+		stats[i].popFitnessSD = calculateFitnessPopulationSD(stats[i].popFitnessMean);
+		stats[i].popBestFitness = calculateBestFitnessPopulation();
 		this->crossover();
 		this->mutation();
 	}
@@ -121,20 +134,25 @@ void Dilemma::writeMatLabScript() {
 
 	pen << "y=[";
 	for (int i = 0; i < NGENERATIONS; ++i)
-		pen << stats[i].fitnessPopMean << " ";
+		pen << stats[i].popFitnessMean << " ";
 	pen << "];\n";
 
 	pen << "wup=[";
 	for (int i = 0; i < NGENERATIONS; ++i)
-		pen << stats[i].fitnessPopMean + stats[i].fitnessPopSD << " ";
+		pen << stats[i].popFitnessMean + stats[i].popFitnessSD << " ";
 	pen << "];\n";
 
 	pen << "wdown=[";
 	for (int i = 0; i < NGENERATIONS; ++i)
-		pen << stats[i].fitnessPopMean - stats[i].fitnessPopSD << " ";
+		pen << stats[i].popFitnessMean - stats[i].popFitnessSD << " ";
 	pen << "];\n";
 
-	pen << "plot(x,y,'-gs',x,wup,x,wdown);\n";
+	pen << "best=[";
+	for (int i = 0; i < NGENERATIONS; ++i)
+		pen << stats[i].popBestFitness << " ";
+	pen << "];\n";
+
+	pen << "plot(x,y,'-gs',x,wup,'-b',x,wdown,'-b',x,best,'-rs');\n";
 	pen << "title('Prisoners Dilemma');\n";
 	pen << "xlabel('GENERATION');\n";
 	pen << "ylabel('FITNESS MEAN PER GENERATION');\n";
