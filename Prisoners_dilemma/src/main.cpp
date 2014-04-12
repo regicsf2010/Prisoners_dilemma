@@ -12,6 +12,7 @@ using namespace std;
 int main(void){
 	Dilemma *d = new Dilemma();
 	d->runGA();
+	cout << "Finished!" << endl;
 	return EXIT;
 }
 
